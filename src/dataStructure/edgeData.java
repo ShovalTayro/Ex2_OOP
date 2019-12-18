@@ -1,28 +1,37 @@
 package dataStructure;
 
 public class edgeData implements edge_data{
+	int key;
 	nodeData src;
 	nodeData dest;
 	double weight;
 	int tag;
+	String info;
 	
 	public edgeData(nodeData src, nodeData dest, double weight, int tag) {
 		this.src = src;
 		this.dest = dest;
 		this.weight = weight;
 		this.tag = tag;
+		this.key = (src.key*10+dest.key);
 	}
+	public edgeData(node_data node_data, node_data node_data2, double weight) {
 	
+		this.src= (nodeData) node_data;
+		this.dest=(nodeData) node_data2; 
+		this.weight=weight;
+		this.tag=0;
+		this.key = (src.key*10+dest.key);
+		}
 	public edgeData(edgeData e) {
 		this.src = e.src;
 		this.dest = e.dest;
 		this.weight = e.weight;
 		this.tag = e.tag;
+		this.key =e.key;
 	}
 	
-	public edgeData(node_data n1, node_data n2, double weight) {
-		
-	}
+	
 
 	@Override
 	public int getSrc() {
@@ -47,7 +56,7 @@ public class edgeData implements edge_data{
 
 	@Override
 	public void setInfo(String s) {
-		// TODO Auto-generated method stub
+		this.info =s;
 		
 	}
 
