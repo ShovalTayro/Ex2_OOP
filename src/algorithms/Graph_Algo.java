@@ -79,6 +79,7 @@ public class Graph_Algo implements graph_algorithms{
 		for (int i = 0; i < ourGraph.getV().size(); i++) {
 			ourGraph.getNode(i).setWeight(Double.MAX_VALUE);
 		}
+
 		ourGraph.get
 		ourGraph.getNode(src).setWeight(0);
 		node_data desti = ourGraph.getNode(dest);
@@ -87,6 +88,7 @@ public class Graph_Algo implements graph_algorithms{
 		while(visit <  ) {
 			
 		}
+
 		return 0;
 	}
 
