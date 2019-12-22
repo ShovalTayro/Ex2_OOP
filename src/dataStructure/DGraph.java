@@ -3,12 +3,14 @@ package dataStructure;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Map;
 
 public class DGraph implements graph{
-	Map<Integer, node_data> nodes = new HashMap<Integer, node_data>();	
-	Map<Integer , edge_data> edges = new HashMap<Integer , edge_data>();
+	Hashtable <Integer, node_data> nodes = new Hashtable<Integer, node_data>();	
+	Hashtable<node_data , Hashtable<Integer,edge_data>> edges = new Hashtable<node_data, Hashtable<Integer, edge_data>>();
 	int countMC=0;
+	int countE = 0;
 	public node_data getNode(int key) {
 		return nodes.get(key);
 
@@ -20,8 +22,8 @@ public class DGraph implements graph{
 		if(nodes.get(src)==null || nodes.get(dest)==null) return null;
 		else
 		{
-			int key = src*10+dest;
-			if(edges.get(key)!= null) return edges.get(key);
+			node_data key= nodes.get(src);
+			if(edges.get(key)!= null) return edges.get(key).get(dest);
 			else {		
 				return null;
 			}
@@ -37,64 +39,66 @@ public class DGraph implements graph{
 	@Override
 	public void connect(int src, int dest, double w) {
 		if(src!=dest) {
-			try{
-				int key = (src*10+dest);
-				edgeData e= new edgeData(nodes.get(src), nodes.get(dest), w);
-				edges.put(key, e);
-				countMC++;
 
+			node_data key = nodes.get(src);
+			node_data desti = nodes.get(dest);
+			if (key!= null&& desti!= null) {
+				edgeData e= new edgeData(nodes.get(src), nodes.get(dest), w);
+				edges.get(key).put(dest, e);
+				countMC++;
+				countE++;
 			}
-			catch(Exception e) {
-				System.out.println("error , cannot build edge , one or more of the nodes are missing");
+			else {
+				System.out.println("error , src/dest does not exist");
 			}
 		}
-		else { 
+		else {
 			System.out.println("error , same nodes");
 		}
 	}
 
 	@Override
 	public Collection<node_data> getV() {
-		ArrayList<node_data> temp = new ArrayList<node_data>();
-		for(int i =0; i<nodes.size();i++)
-		{
-			temp.add(nodes.get(i));
-		}
-		return temp;
+
+		return nodes.values();
 	}
 
 	@Override
 	public Collection<edge_data> getE(int node_id) {
-		ArrayList<edge_data> temp = new ArrayList<edge_data>();
-		for(int i =0;i<edges.size();i++) {
-			if(edges.get(i).getSrc()==node_id)
-				temp.add(edges.get(i));
-
-		}
-		return temp;
+		node_data key = nodes.get(node_id);
+		return  edges.get(key).values();
 	}
 
 	@Override
 	public node_data removeNode(int key) {
-		node_data temp = (nodeData)(nodes.get(key));
+		node_data temp = nodes.get(key);
 		if(temp== null) return null;
-		for(int i =0;i<edges.size();i++) {
-			if((edges.get(i).getSrc()==key)||(edges.get(i).getDest()==key)) {
-				edges.remove(i);
-				countMC++;
-			}
+		countE -= edges.get(temp).size();
+		edges.get(temp).clear();
+		for(int i = 0; i < nodes.size(); i++) {
+			node_data tempR = nodes.get(i);
+			edges.get(tempR).remove(key);
+			countE--;
+
 		}
+		countMC++;
 		return temp;
 	}
 
 	@Override
 	public edge_data removeEdge(int src, int dest) {
-		int key = src*10 +dest;
-		edge_data temp = (edgeData) edges.get(key);
-		if(temp == null) return null;
-		edges.remove(key);
-		countMC++;
-		return temp;
+		node_data temp = nodes.get(src);
+		node_data temp2 = nodes.get(dest);
+		edge_data ans = null;
+		if(temp != null&& temp2!= null) {
+			ans=  edges.get(temp).remove(dest);
+			if (ans != null)
+			{
+				countMC++ ;
+				countE--;
+			}
+		}
+		return ans;
 	}
 
 	@Override
@@ -105,9 +109,7 @@ public class DGraph implements graph{
 
 	@Override
 	public int edgeSize() {
-		if(edges.isEmpty()) return 0;
-		return edges.size();
-
+		return countE;
 	}
 
 	@Override
