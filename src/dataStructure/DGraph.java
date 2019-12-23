@@ -6,7 +6,9 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 
-public class DGraph implements graph{
+import javax.swing.JFrame;
+
+public class DGraph extends JFrame  implements graph{
 	Hashtable <Integer, node_data> nodes = new Hashtable<Integer, node_data>();	
 	Hashtable<node_data , Hashtable<Integer,edge_data>> edges = new Hashtable<node_data, Hashtable<Integer, edge_data>>();
 	int countMC=0;
@@ -33,11 +35,12 @@ public class DGraph implements graph{
 	@Override
 	public void addNode(node_data n) {
 		nodes.put(n.getKey(), n); 
+		edges.put(n, new Hashtable<Integer, edge_data>());
 		countMC++;
 	}
 
 	@Override
-	public void connect(int src, int dest, double w) {
+	public void connect(int src, int dest, double w) {		
 		if(src!=dest) {
 
 			node_data key = nodes.get(src);
@@ -75,12 +78,12 @@ public class DGraph implements graph{
 		if(temp== null) return null;
 		countE -= edges.get(temp).size();
 		edges.get(temp).clear();
+		//remove edge when dest is key
 		for(int i = 0; i < nodes.size(); i++) {
 			node_data tempR = nodes.get(i);
 			edges.get(tempR).remove(key);
-			countE--;
-
 		}
+		nodes.remove(key);
 		countMC++;
 		return temp;
 	}
@@ -96,6 +99,9 @@ public class DGraph implements graph{
 			{
 				countMC++ ;
 				countE--;
+			}
+			else {
+				System.out.println("the edge does not exist");
 			}
 		}
 		return ans;

@@ -1,28 +1,23 @@
 package dataStructure;
 
+import java.awt.Color;
+
 public class edgeData implements edge_data{
 	node_data key;
-	nodeData src;
-	nodeData dest;
+	node_data src;
+	node_data dest;
 	double weight;
-	int tag;
+	Color tag;
 	String info;
 
-	public edgeData(nodeData src, nodeData dest, double weight, int tag) {
+	public edgeData(node_data src, node_data dest, double weight) {
 		this.src = src;
 		this.dest = dest;
 		this.weight = weight;
-		this.tag = tag;
+		this.tag = Color.BLACK;
 		this.key = src;
 	}
-	public edgeData(node_data src, node_data dest, double weight) {
-
-		this.src= (nodeData) src;
-		this.dest=(nodeData) dest; 
-		this.weight=weight;
-		this.tag=0;
-		this.key = src;
-	}
+	
 	public edgeData(edgeData e) {
 		this.src = e.src;
 		this.dest = e.dest;
@@ -35,12 +30,12 @@ public class edgeData implements edge_data{
 
 	@Override
 	public int getSrc() {
-		return this.src.key;
+		return this.src.getKey();
 	}
 
 	@Override
 	public int getDest() {
-		return this.dest.key;
+		return this.dest.getKey();
 	}
 
 	@Override
@@ -61,12 +56,12 @@ public class edgeData implements edge_data{
 
 	@Override
 	public int getTag() {
-		return this.tag;
+		return this.tag.getRGB();
 	}
 
 	@Override
 	public void setTag(int t) {
-		this.tag = t;
+		this.tag = new Color(t);
 	}
 
 }

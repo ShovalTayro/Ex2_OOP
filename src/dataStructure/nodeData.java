@@ -17,6 +17,7 @@ public class nodeData implements node_data {
 		this.tag= Color.black;
 		this.weight = 0;
 	}
+	
 	public nodeData(int key, int weight, Point3D point) {
 		this.key=key;
 		this.weight=weight;
