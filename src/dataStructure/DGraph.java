@@ -34,32 +34,38 @@ public class DGraph extends JFrame  implements graph{
 
 	@Override
 	public void addNode(node_data n) {
-		nodes.put(n.getKey(), n); 
-		edges.put(n, new Hashtable<Integer, edge_data>());
-		countMC++;
+		if(nodes.contains(n)) System.out.println("the node already exist");
+		else {
+			nodes.put(n.getKey(), n); 
+			edges.put(n, new Hashtable<Integer, edge_data>());
+			countMC++;
+		}
 	}
 
 	@Override
-	public void connect(int src, int dest, double w) {		
-		if(src!=dest) {
+	public void connect(int src, int dest, double w) {
+		if(w < 0) System.out.println("the weight can not be negative");
+		else {
+			if(src!=dest) {
 
-			node_data key = nodes.get(src);
-			node_data desti = nodes.get(dest);
-			if (key!= null&& desti!= null) {
-				edgeData e= new edgeData(nodes.get(src), nodes.get(dest), w);
-				edges.get(key).put(dest, e);
-				countMC++;
-				countE++;
+				node_data key = nodes.get(src);
+				node_data desti = nodes.get(dest);
+				if (key!= null&& desti!= null && edges.get(key).get(dest)== null) {
+					edgeData e= new edgeData(nodes.get(src), nodes.get(dest), w);
+					edges.get(key).put(dest, e);
+					countMC++;
+					countE++;
+				}
+				else {
+					System.out.println("error , src/dest does not exist");
+				}
 			}
 			else {
-				System.out.println("error , src/dest does not exist");
+				System.out.println("error , same nodes");
+
 			}
 		}
-		else {
-			System.out.println("error , same nodes");
-		}
 	}
-
 	@Override
 	public Collection<node_data> getV() {
 

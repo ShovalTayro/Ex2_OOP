@@ -1,10 +1,11 @@
 package dataStructure;
 
 import java.awt.Color;
+import java.io.Serializable;
 
 import utils.Point3D;
 
-public class nodeData implements node_data {
+public class nodeData implements node_data , Serializable {
 	int key;
 	double weight;
 	Point3D point;
@@ -60,8 +61,7 @@ public class nodeData implements node_data {
 
 	@Override
 	public String getInfo() {
-		String s ="";
-		return s;
+		return this.info;
 	}
 
 	@Override

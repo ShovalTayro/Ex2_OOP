@@ -1,10 +1,12 @@
 package algorithms;
 
+import java.awt.Color;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -21,7 +23,7 @@ import dataStructure.node_data;
  * @author 
  *
  */
-public class Graph_Algo implements graph_algorithms{
+public class Graph_Algo implements graph_algorithms, Serializable{
 
 	graph ourGraph;
 	@Override
@@ -74,7 +76,7 @@ public class Graph_Algo implements graph_algorithms{
 		// do for every edge (v -> u)
 		for (edge_data u : edges){
 			// u is not visited
-			if (ourGraph2.getNode(u.getDest()).getTag() !=1)
+			if (ourGraph2.getNode(u.getDest()).getTag() != new Color(1).getRGB())
 				DFS(ourGraph2, u.getDest());
 		}
 	}
@@ -83,16 +85,18 @@ public class Graph_Algo implements graph_algorithms{
 	@Override
 	public boolean isConnected() {
 
-		int sizeN = ourGraph.nodeSize();
-		for (int i = 0; i < sizeN; i++)	{
+		Collection<node_data> v = ourGraph.getV();
+		Iterator<node_data> it = v.iterator();
+		while(it.hasNext()) {
+			node_data n = it.next();
 			clear();
 			// start DFS from first vertex
-			DFS(ourGraph, i);
+			DFS(ourGraph, n.getKey());
 
 			// If DFS traversal doesn’t visit all vertices,
 			// then graph is not strongly connected
 			for (node_data node: ourGraph.getV())
-				if (node.getTag()!=1)
+				if (node.getTag()!= new Color(1).getRGB())
 					return false;
 		}
 		return true;
@@ -100,8 +104,8 @@ public class Graph_Algo implements graph_algorithms{
 
 	@Override
 	public double shortestPathDist(int src, int dest) {
-
 		clear();
+		int countVisit = 0;
 		node_data source = ourGraph.getNode(src);
 		source.setWeight(0);
 		while(source != null) {
@@ -110,22 +114,27 @@ public class Graph_Algo implements graph_algorithms{
 			node_data minNeighbor=null;
 			//array list of edges getting out from source
 			Collection<edge_data> eSrc = ourGraph.getE(source.getKey());
+			int size = eSrc.size();
 			//checking every node weight and change it if needed , save min weight and make it source node
 			Iterator<edge_data> it = eSrc.iterator();
 			while(it.hasNext()) {
-				node_data neighbor = ourGraph.getNode(it.next().getDest());
-				if(neighbor.getWeight() > source.getWeight()+ it.next().getWeight()) {
-					neighbor.setWeight( source.getWeight()+ it.next().getWeight());
+				edge_data e = it.next();
+				node_data neighbor = ourGraph.getNode(e.getDest());
+				if(neighbor.getWeight() > source.getWeight()+ e.getWeight()) {
+					neighbor.setWeight( source.getWeight()+ e.getWeight());
 					neighbor.setInfo(""+source.getKey());
-					if(minNeighbor==null&& neighbor.getTag()==0) {
+					if(minNeighbor==null&& neighbor.getTag()== new Color(0).getRGB()) {
 						minNeighbor= neighbor;
 					}
 					else {
-						if((minNeighbor.getWeight()>neighbor.getWeight())&& neighbor.getTag()==0 ) {
+						if((minNeighbor.getWeight()>neighbor.getWeight())&& neighbor.getTag()== new Color(0).getRGB() ) {
 							minNeighbor=neighbor;
 						}
 					}
 
+				}
+				else if(countVisit != size) {
+					minNeighbor = neighbor;
 				}
 			}
 			source=minNeighbor;
@@ -134,10 +143,13 @@ public class Graph_Algo implements graph_algorithms{
 	}
 
 	private void clear() {
-		for (int i = 0; i < ourGraph.getV().size(); i++) {
-			ourGraph.getNode(i).setWeight(Double.MAX_VALUE);
-			ourGraph.getNode(i).setTag(0);
-			ourGraph.getNode(i).setInfo("");
+		Collection<node_data> v = ourGraph.getV();
+		Iterator<node_data> it = v.iterator();
+		while(it.hasNext()) {
+			node_data n = it.next();
+			n.setWeight(Double.MAX_VALUE);
+			n.setTag(0);
+			n.setInfo(null);
 		}
 	}
 
@@ -151,7 +163,11 @@ public class Graph_Algo implements graph_algorithms{
 			source=ourGraph.getNode(Integer.parseInt(source.getInfo()));
 			ans.add(source);
 		}
-		return ans;
+		ArrayList<node_data> answer = new ArrayList<node_data>();
+		for (int i = ans.size()-1; i >= 0 ; i--) {
+			answer.add(ans.get(i));
+		}
+		return answer;
 	}
 
 	@Override
