@@ -128,11 +128,11 @@ public class Graph_Algo implements graph_algorithms, Serializable{
 					neighbor.setInfo(""+source.getKey());
 					pq.add(neighbor);
 				}
-			}
-			//remove first queue
-			pq.poll();
-			source = pq.peek();
+				//remove first queue
+				pq.poll();
+				source = pq.peek();
 
+			}
 		}
 		return ourGraph.getNode(dest).getWeight();
 	}
