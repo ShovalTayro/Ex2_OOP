@@ -1,8 +1,9 @@
 package dataStructure;
 
 import java.awt.Color;
+import java.io.Serializable;
 
-public class edgeData implements edge_data{
+public class edgeData implements edge_data , Serializable{
 	node_data key;
 	node_data src;
 	node_data dest;

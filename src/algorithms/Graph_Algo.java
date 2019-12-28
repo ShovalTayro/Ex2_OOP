@@ -1,15 +1,21 @@
 package algorithms;
 
+import java.awt.Color;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.AbstractQueue;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.PriorityQueue;
+import java.util.Queue;
 
 import dataStructure.DGraph;
 import dataStructure.edge_data;
@@ -21,7 +27,7 @@ import dataStructure.node_data;
  * @author 
  *
  */
-public class Graph_Algo implements graph_algorithms{
+public class Graph_Algo implements graph_algorithms, Serializable{
 
 	graph ourGraph;
 	@Override
@@ -74,7 +80,7 @@ public class Graph_Algo implements graph_algorithms{
 		// do for every edge (v -> u)
 		for (edge_data u : edges){
 			// u is not visited
-			if (ourGraph2.getNode(u.getDest()).getTag() !=1)
+			if (ourGraph2.getNode(u.getDest()).getTag() != new Color(1).getRGB())
 				DFS(ourGraph2, u.getDest());
 		}
 	}
@@ -83,16 +89,18 @@ public class Graph_Algo implements graph_algorithms{
 	@Override
 	public boolean isConnected() {
 
-		int sizeN = ourGraph.nodeSize();
-		for (int i = 0; i < sizeN; i++)	{
+		Collection<node_data> v = ourGraph.getV();
+		Iterator<node_data> it = v.iterator();
+		while(it.hasNext()) {
+			node_data n = it.next();
 			clear();
 			// start DFS from first vertex
-			DFS(ourGraph, i);
+			DFS(ourGraph, n.getKey());
 
 			// If DFS traversal doesn’t visit all vertices,
 			// then graph is not strongly connected
 			for (node_data node: ourGraph.getV())
-				if (node.getTag()!=1)
+				if (node.getTag()!= new Color(1).getRGB())
 					return false;
 		}
 		return true;
@@ -100,44 +108,43 @@ public class Graph_Algo implements graph_algorithms{
 
 	@Override
 	public double shortestPathDist(int src, int dest) {
-
 		clear();
+		Queue<node_data> pq = new LinkedList<node_data>();
 		node_data source = ourGraph.getNode(src);
 		source.setWeight(0);
-		while(source != null) {
+		pq.add(source);
+		while(source != null) {  
 			//mark visit
 			source.setTag(1);
-			node_data minNeighbor=null;
 			//array list of edges getting out from source
 			Collection<edge_data> eSrc = ourGraph.getE(source.getKey());
-			//checking every node weight and change it if needed , save min weight and make it source node
+			//checking every node weight and change it if needed
 			Iterator<edge_data> it = eSrc.iterator();
 			while(it.hasNext()) {
-				node_data neighbor = ourGraph.getNode(it.next().getDest());
-				if(neighbor.getWeight() > source.getWeight()+ it.next().getWeight()) {
-					neighbor.setWeight( source.getWeight()+ it.next().getWeight());
+				edge_data e = it.next();
+				node_data neighbor = ourGraph.getNode(e.getDest());
+				if(neighbor.getWeight() > source.getWeight()+ e.getWeight()) {
+					neighbor.setWeight( source.getWeight()+ e.getWeight());
 					neighbor.setInfo(""+source.getKey());
-					if(minNeighbor==null&& neighbor.getTag()==0) {
-						minNeighbor= neighbor;
-					}
-					else {
-						if((minNeighbor.getWeight()>neighbor.getWeight())&& neighbor.getTag()==0 ) {
-							minNeighbor=neighbor;
-						}
-					}
-
+					pq.add(neighbor);
 				}
 			}
-			source=minNeighbor;
+			//remove first queue
+			pq.poll();
+			source = pq.peek();
+
 		}
 		return ourGraph.getNode(dest).getWeight();
 	}
 
 	private void clear() {
-		for (int i = 0; i < ourGraph.getV().size(); i++) {
-			ourGraph.getNode(i).setWeight(Double.MAX_VALUE);
-			ourGraph.getNode(i).setTag(0);
-			ourGraph.getNode(i).setInfo("");
+		Collection<node_data> v = ourGraph.getV();
+		Iterator<node_data> it = v.iterator();
+		while(it.hasNext()) {
+			node_data n = it.next();
+			n.setWeight(Double.MAX_VALUE);
+			n.setTag(0);
+			n.setInfo(null);
 		}
 	}
 
@@ -151,26 +158,76 @@ public class Graph_Algo implements graph_algorithms{
 			source=ourGraph.getNode(Integer.parseInt(source.getInfo()));
 			ans.add(source);
 		}
-		return ans;
+		ArrayList<node_data> answer = new ArrayList<node_data>();
+		for (int i = ans.size()-1; i >= 0 ; i--) {
+			answer.add(ans.get(i));
+		}
+		return answer;
 	}
 
 	@Override
 	public List<node_data> TSP(List<Integer> targets) {
-		// TODO Auto-generated method stub
-		return null;
+		if(isConnected1(targets)) {
+			List<node_data> ans = new ArrayList<node_data>();
+			List<node_data> check = new ArrayList<node_data>();
+			double min = 0;
+			double temp=0;
+			for (int i = 0; i < targets.size()-1; i++) {
+				int src = targets.get(i);
+				int dest = targets.get(i+1);
+				min += shortestPathDist(src,dest);
+				System.out.println("ok " + i);
+				ans.addAll(shortestPath(src,dest));	
+			}
+			for(int i =0;i<2;i++) {
+				Collections.shuffle(targets);
+				for (int j = 0; j < targets.size()-2; j++) {
+					int src = targets.get(j);
+					int dest = targets.get(j+1);
+					temp += shortestPathDist(src,dest);
+					check.addAll(shortestPath(src,dest));	
+					System.out.println("min = "+ min +" , temp = "+ temp);
+				}
+				if(temp<min) {
+					min = temp;
+					ans= check;
+				}
+			}
+			return ans;
+		}
+		else return null;
+	}
+
+	private boolean isConnected1(List<Integer> targets) {
+		DGraph g = new DGraph();
+		for (int i = 0; i < targets.size(); i++) {
+			node_data a= ourGraph.getNode(targets.get(i));
+			g.addNode(a);
+			Collection<edge_data> edge =  ourGraph.getE(a.getKey());
+			for(edge_data e: edge) {
+				if(targets.contains(e.getDest())) {
+					g.connect(a.getKey(), e.getDest(), e.getWeight());
+				}
+			}
+		}
+		if(g.edgeSize()== (targets.size()*(targets.size()-1))) return true;
+		else return false;
 	}
 
 	@Override
 	public graph copy() {
 		DGraph temp = new DGraph();
 		Collection<node_data> nodes= this.ourGraph.getV();
-		Iterator<node_data> it2 = nodes.iterator();
-		while(it2.hasNext()) {
-			temp.addNode(it2.next());
-			Collection<edge_data> edges=this.ourGraph.getE(it2.next().getKey());
-			Iterator<edge_data> it = edges.iterator();
-			while(it.hasNext()) {
-				edge_data e = it.next();
+		Iterator<node_data> it = nodes.iterator();
+		while(it.hasNext()) {
+			temp.addNode(it.next());
+		}
+		Iterator<node_data> it1 = nodes.iterator();
+		while(it1.hasNext()) {
+			Collection<edge_data> edges=this.ourGraph.getE(it1.next().getKey());
+			Iterator<edge_data> it2 = edges.iterator();
+			while(it2.hasNext()) {
+				edge_data e = it2.next();
 				temp.connect(e.getSrc(), e.getDest(), e.getWeight());
 			}
 		}
