@@ -82,13 +82,13 @@ class Graph_AlgoTest {
 
 	@Test
 	void testShortestPath() {
-//		for (int i = 0; i < 5; i++) {
-//			for (int j = 0; j < 5; j++) {
-//				if(i != j) {
-//					g.connect(i, j, j);
-//				}
-//			}
-//		}
+		//		for (int i = 0; i < 5; i++) {
+		//			for (int j = 0; j < 5; j++) {
+		//				if(i != j) {
+		//					g.connect(i, j, j);
+		//				}
+		//			}
+		//		}
 		g.connect(0,1,2);
 		g.connect(1,4,4);
 		g.connect(4,3,1);
@@ -99,7 +99,7 @@ class Graph_AlgoTest {
 		g.connect(0,4,10);
 		g.connect(4,1,3);
 		g.connect(2,1,2);
-		
+
 		Graph_Algo graphA = new Graph_Algo();
 		graphA.init(g);
 		List<node_data> ans = graphA.shortestPath(0, 3);
@@ -115,8 +115,8 @@ class Graph_AlgoTest {
 		exp.add(c);
 		exp.add(d);
 		exp.add(e);
-		String actual = null;
-		String expected = null;
+		String actual = "";
+		String expected = "";
 		for (int i = 0; i < ans.size(); i++) {
 			actual += ""+ans.get(i).getKey();
 		}
@@ -128,26 +128,37 @@ class Graph_AlgoTest {
 
 	@Test
 	void testTSP() {
-		for (int i = 0; i < 5; i++) {
-			for (int j = 0; j < 4; j++) {
-				if(i != j) {
-					g.connect(i, j, j);
-				}
-			}
-		}
+		//		for (int i = 0; i < 5; i++) {
+		//			for (int j = 0; j < 4; j++) {
+		//				if(i != j) {
+		//					g.connect(i, j, j);
+		//				}
+		//			}
+		//		}
+		g.connect(0, 1, 2);
+		g.connect(1, 2, 1);
+		g.connect(2, 3, 3);
+		//g.connect(3, 4, 5);
+		g.connect(4, 0, 2);
 		List<Integer> targets = new ArrayList<Integer>();
 		targets.add(0);
 		targets.add(2);
 		targets.add(4);
 		Graph_Algo a = new Graph_Algo();
 		a.init(g);
-	List<node_data> ans =a.TSP(targets);
-	System.out.println(ans.toString());
-	}
-
-		@Test
-		void testCopy() {
-			fail("Not yet implemented");
+		List<node_data> ans =a.TSP(targets);
+		if(ans.isEmpty()) System.out.println("null");
+		else {
+			for (int i = 0; i < ans.size(); i++) {
+				System.out.print(ans.get(i).getKey() + " ");
+			}
+			//System.out.println(ans.toString());
 		}
-
 	}
+
+	@Test
+	void testCopy() {
+		fail("Not yet implemented");
+	}
+
+}

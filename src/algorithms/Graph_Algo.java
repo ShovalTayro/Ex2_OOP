@@ -94,11 +94,9 @@ public class Graph_Algo implements graph_algorithms, Serializable{
 		while(it.hasNext()) {
 			node_data n = it.next();
 			clear();
-			// start DFS from first vertex
+			// start DFS from first node
 			DFS(ourGraph, n.getKey());
 
-			// If DFS traversal doesn’t visit all vertices,
-			// then graph is not strongly connected
 			for (node_data node: ourGraph.getV())
 				if (node.getTag()!= new Color(1).getRGB())
 					return false;
@@ -128,13 +126,19 @@ public class Graph_Algo implements graph_algorithms, Serializable{
 					neighbor.setInfo(""+source.getKey());
 					pq.add(neighbor);
 				}
-				//remove first queue
-				pq.poll();
-				source = pq.peek();
-
 			}
+			//remove first queue
+			pq.poll();
+			source = pq.peek();
+
 		}
-		return ourGraph.getNode(dest).getWeight();
+		if (ourGraph.getNode(dest).getWeight() == Double.MAX_VALUE) {
+			System.out.println("there is no path between "+ src + " and " + dest);
+			return -1;
+		}
+		else {
+			return ourGraph.getNode(dest).getWeight();
+		}
 	}
 
 	private void clear() {
@@ -150,7 +154,7 @@ public class Graph_Algo implements graph_algorithms, Serializable{
 
 	@Override
 	public List<node_data> shortestPath(int src, int dest) {
-		double a = shortestPathDist(src, dest);
+		if(shortestPathDist(src, dest) == -1) return null;
 		ArrayList<node_data> ans = new ArrayList<node_data>();
 		node_data source = ourGraph.getNode(dest);
 		ans.add(source);
@@ -167,51 +171,33 @@ public class Graph_Algo implements graph_algorithms, Serializable{
 
 	@Override
 	public List<node_data> TSP(List<Integer> targets) {
-		if(isConnected1(targets)) {
-			List<node_data> ans = new ArrayList<node_data>();
-			List<node_data> check = new ArrayList<node_data>();
-			double min = 0;
-			double temp=0;
-			for (int i = 0; i < targets.size()-1; i++) {
-				int src = targets.get(i);
-				int dest = targets.get(i+1);
-				min += shortestPathDist(src,dest);
-				System.out.println("ok " + i);
-				ans.addAll(shortestPath(src,dest));	
-			}
-			for(int i =0;i<2;i++) {
-				Collections.shuffle(targets);
-				for (int j = 0; j < targets.size()-2; j++) {
-					int src = targets.get(j);
-					int dest = targets.get(j+1);
-					temp += shortestPathDist(src,dest);
-					check.addAll(shortestPath(src,dest));	
-					System.out.println("min = "+ min +" , temp = "+ temp);
-				}
-				if(temp<min) {
-					min = temp;
-					ans= check;
-				}
-			}
+		List<node_data> ans = new ArrayList<node_data>();
+		if (targets.isEmpty()) return null;
+		if(targets.size()==1) {
+			ans.add(ourGraph.getNode(targets.get(0)));
 			return ans;
 		}
-		else return null;
-	}
-
-	private boolean isConnected1(List<Integer> targets) {
-		DGraph g = new DGraph();
-		for (int i = 0; i < targets.size(); i++) {
-			node_data a= ourGraph.getNode(targets.get(i));
-			g.addNode(a);
-			Collection<edge_data> edge =  ourGraph.getE(a.getKey());
-			for(edge_data e: edge) {
-				if(targets.contains(e.getDest())) {
-					g.connect(a.getKey(), e.getDest(), e.getWeight());
+		int src = targets.get(0);
+		int dest = 0;
+		for(int j = 0; j < 10; j++) {
+			src = targets.get(0);
+			for(int i = 1; i < targets.size(); i++) {
+				dest = targets.get(i);
+				if (shortestPath(src, dest) == null) {
+					ans.clear();
+					break;
 				}
+				ans.addAll(shortestPath(src, dest));
+				ans.remove(ourGraph.getNode(dest));
+				src = dest;
 			}
+			if(shortestPath(src, dest)!= null) ans.add(ourGraph.getNode(dest));
+			if(!ans.isEmpty()) {
+				return ans;
+			}
+			Collections.shuffle(targets);
 		}
-		if(g.edgeSize()== (targets.size()*(targets.size()-1))) return true;
-		else return false;
+		return ans;
 	}
 
 	@Override
