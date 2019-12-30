@@ -7,14 +7,12 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.AbstractQueue;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.PriorityQueue;
 import java.util.Queue;
 
 import dataStructure.DGraph;
@@ -28,12 +26,11 @@ import dataStructure.node_data;
  *
  */
 public class Graph_Algo implements graph_algorithms, Serializable{
-
 	graph ourGraph;
+	
 	@Override
 	public void init(graph g) {
 		this.ourGraph =g;
-
 	}
 
 	@Override
@@ -73,7 +70,7 @@ public class Graph_Algo implements graph_algorithms, Serializable{
 			System.out.println("IOException is caught"); 
 		} 
 	}
-	private static void DFS( graph ourGraph2, int v){
+	private static void DFS(graph ourGraph2, int v){
 		// mark current node as visited
 		ourGraph2.getNode(v).setTag(1); 
 		Collection<edge_data> edges = ourGraph2.getE(v);
@@ -85,10 +82,8 @@ public class Graph_Algo implements graph_algorithms, Serializable{
 		}
 	}
 
-
 	@Override
 	public boolean isConnected() {
-
 		Collection<node_data> v = ourGraph.getV();
 		Iterator<node_data> it = v.iterator();
 		while(it.hasNext()) {
@@ -127,14 +122,14 @@ public class Graph_Algo implements graph_algorithms, Serializable{
 					pq.add(neighbor);
 				}
 			}
-			//remove first queue
+			//remove first from queue
 			pq.poll();
 			source = pq.peek();
 
 		}
 		if (ourGraph.getNode(dest).getWeight() == Double.MAX_VALUE) {
 			System.out.println("there is no path between "+ src + " and " + dest);
-			return -1;
+			return Double.POSITIVE_INFINITY;
 		}
 		else {
 			return ourGraph.getNode(dest).getWeight();
@@ -154,7 +149,7 @@ public class Graph_Algo implements graph_algorithms, Serializable{
 
 	@Override
 	public List<node_data> shortestPath(int src, int dest) {
-		if(shortestPathDist(src, dest) == -1) return null;
+		if(shortestPathDist(src, dest) == Double.POSITIVE_INFINITY) return null;
 		ArrayList<node_data> ans = new ArrayList<node_data>();
 		node_data source = ourGraph.getNode(dest);
 		ans.add(source);
@@ -179,10 +174,12 @@ public class Graph_Algo implements graph_algorithms, Serializable{
 		}
 		int src = targets.get(0);
 		int dest = 0;
+		//10 tries to find path
 		for(int j = 0; j < 10; j++) {
 			src = targets.get(0);
 			for(int i = 1; i < targets.size(); i++) {
 				dest = targets.get(i);
+				//there is no path clear, break and try again
 				if (shortestPath(src, dest) == null) {
 					ans.clear();
 					break;
@@ -192,6 +189,7 @@ public class Graph_Algo implements graph_algorithms, Serializable{
 				src = dest;
 			}
 			if(shortestPath(src, dest)!= null) ans.add(ourGraph.getNode(dest));
+			//find path
 			if(!ans.isEmpty()) {
 				return ans;
 			}
@@ -202,6 +200,7 @@ public class Graph_Algo implements graph_algorithms, Serializable{
 
 	@Override
 	public graph copy() {
+		//deep copy go to every node to all of his edges and deep copy them
 		DGraph temp = new DGraph();
 		Collection<node_data> nodes= this.ourGraph.getV();
 		Iterator<node_data> it = nodes.iterator();
@@ -219,7 +218,4 @@ public class Graph_Algo implements graph_algorithms, Serializable{
 		}
 		return temp;
 	}
-
 }
-
-

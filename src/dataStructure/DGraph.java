@@ -1,11 +1,7 @@
 package dataStructure;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Map;
-
 import javax.swing.JFrame;
 
 public class DGraph extends JFrame  implements graph{
@@ -13,9 +9,9 @@ public class DGraph extends JFrame  implements graph{
 	Hashtable<node_data , Hashtable<Integer,edge_data>> edges = new Hashtable<node_data, Hashtable<Integer, edge_data>>();
 	int countMC=0;
 	int countE = 0;
+
 	public node_data getNode(int key) {
 		return nodes.get(key);
-
 	}
 
 	@Override
@@ -34,7 +30,7 @@ public class DGraph extends JFrame  implements graph{
 
 	@Override
 	public void addNode(node_data n) {
-		if(nodes.contains(n)) System.out.println("the node already exist");
+		if(nodes.get(n.getKey()) != null) System.out.println("the node already exist");
 		else {
 			nodes.put(n.getKey(), n); 
 			edges.put(n, new Hashtable<Integer, edge_data>());
@@ -47,9 +43,9 @@ public class DGraph extends JFrame  implements graph{
 		if(w < 0) System.out.println("the weight can not be negative");
 		else {
 			if(src!=dest) {
-
 				node_data key = nodes.get(src);
 				node_data desti = nodes.get(dest);
+				//check that the nodes exist witout edge between them
 				if (key!= null&& desti!= null && edges.get(key).get(dest)== null) {
 					edgeData e= new edgeData(nodes.get(src), nodes.get(dest), w);
 					edges.get(key).put(dest, e);
@@ -57,18 +53,17 @@ public class DGraph extends JFrame  implements graph{
 					countE++;
 				}
 				else {
-					System.out.println("error , src/dest does not exist");
+					throw new RuntimeException("error , src/dest does not exist");
 				}
 			}
 			else {
-				System.out.println("error , same nodes");
+				throw new RuntimeException("error , same nodes");
 
 			}
 		}
 	}
 	@Override
 	public Collection<node_data> getV() {
-
 		return nodes.values();
 	}
 
@@ -82,9 +77,10 @@ public class DGraph extends JFrame  implements graph{
 	public node_data removeNode(int key) {
 		node_data temp = nodes.get(key);
 		if(temp== null) return null;
+		//update the number of edges in the graph
 		countE -= edges.get(temp).size();
 		edges.get(temp).clear();
-		//remove edge when dest is key
+		//remove edge when dest is the key
 		for(int i = 0; i < nodes.size(); i++) {
 			node_data tempR = nodes.get(i);
 			edges.get(tempR).remove(key);
@@ -96,19 +92,26 @@ public class DGraph extends JFrame  implements graph{
 
 	@Override
 	public edge_data removeEdge(int src, int dest) {
-		node_data temp = nodes.get(src);
-		node_data temp2 = nodes.get(dest);
 		edge_data ans = null;
-		if(temp != null&& temp2!= null) {
-			ans=  edges.get(temp).remove(dest);
-			if (ans != null)
-			{
-				countMC++ ;
-				countE--;
+		if(src!= dest) {
+			node_data temp = nodes.get(src);
+			node_data temp2 = nodes.get(dest);	
+			if(temp != null&& temp2!= null) {
+				ans=  edges.get(temp).remove(dest);
+				if (ans != null){
+					countMC++ ;
+					countE--;
+				}
+				else {
+					System.out.println("the edge does not exist");
+				}
 			}
 			else {
-				System.out.println("the edge does not exist");
+				System.out.println("one of the nodes doesn't exist");
 			}
+		}
+		else {
+			System.out.println("same nodes");
 		}
 		return ans;
 	}
@@ -127,7 +130,6 @@ public class DGraph extends JFrame  implements graph{
 	@Override
 	public int getMC() {
 		return countMC;
-
 	}
 
 }

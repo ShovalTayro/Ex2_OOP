@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import algorithms.Graph_Algo;
@@ -29,17 +28,17 @@ class Graph_AlgoTest {
 		}
 		a.init(g);
 	}
-	//	@Test
+	
+		@Test
 	void testSave() {
 		try {
 			a.save("graph.txt");
 			Graph_Algo b = new Graph_Algo();
 			b.init("graph.txt");
-			//			assertEqual(a,b);
 		}
 		catch(Exception e)
 		{
-			System.out.println("can not save to file");
+			System.out.println("can't save to file");
 		}
 	}
 
@@ -77,18 +76,13 @@ class Graph_AlgoTest {
 		assertEquals(2, ans);
 		g.removeEdge(4, 3);
 		ans = graphA.shortestPathDist(4, 3);
-		assertEquals(5, ans);		
+		assertEquals(5, ans);	
+		 ans = graphA.shortestPathDist(0, 3);
+		 assertEquals(4, ans);
 	}
 
 	@Test
 	void testShortestPath() {
-		//		for (int i = 0; i < 5; i++) {
-		//			for (int j = 0; j < 5; j++) {
-		//				if(i != j) {
-		//					g.connect(i, j, j);
-		//				}
-		//			}
-		//		}
 		g.connect(0,1,2);
 		g.connect(1,4,4);
 		g.connect(4,3,1);
@@ -124,21 +118,35 @@ class Graph_AlgoTest {
 			expected += ""+exp.get(i).getKey();
 		}
 		assertTrue(expected.equals(actual));
+		
+		g.removeEdge(0, 1);
+		g.connect(0, 1 , 50);
+		graphA.init(g);
+		List<node_data> answ = graphA.shortestPath(0, 1);
+		List<node_data> exp2 = new ArrayList<node_data>();
+		nodeData a1 = new nodeData(0, 0, new Point3D(0,1,2));
+		nodeData b1 = new nodeData(4, 0, new Point3D(4,5,6));
+		nodeData c1 = new nodeData(1, 0, new Point3D(1,2,3));
+		exp2.add(a1);
+		exp2.add(b1);
+		exp2.add(c1);
+		
+		String actual1 = "";
+		String expected1 = "";
+		for (int i = 0; i < answ.size(); i++) {
+			actual1 += ""+answ.get(i).getKey();
+		}
+		for (int i = 0; i < exp2.size(); i++) {
+			expected1 += ""+exp2.get(i).getKey();
+		}
+		assertTrue(expected1.equals(actual1));
 	}
 
 	@Test
 	void testTSP() {
-		//		for (int i = 0; i < 5; i++) {
-		//			for (int j = 0; j < 4; j++) {
-		//				if(i != j) {
-		//					g.connect(i, j, j);
-		//				}
-		//			}
-		//		}
 		g.connect(0, 1, 2);
 		g.connect(1, 2, 1);
 		g.connect(2, 3, 3);
-		//g.connect(3, 4, 5);
 		g.connect(4, 0, 2);
 		List<Integer> targets = new ArrayList<Integer>();
 		targets.add(0);
@@ -152,13 +160,16 @@ class Graph_AlgoTest {
 			for (int i = 0; i < ans.size(); i++) {
 				System.out.print(ans.get(i).getKey() + " ");
 			}
-			//System.out.println(ans.toString());
 		}
 	}
 
 	@Test
 	void testCopy() {
-		fail("Not yet implemented");
+		graph d = new DGraph();
+		d = a.copy();
+		nodeData n = new nodeData(5,5, new Point3D(5,6,7));
+		d.addNode(n);
+		assertEquals(5, g.nodeSize());
+		assertEquals(6, d.nodeSize());
 	}
-
 }
