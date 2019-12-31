@@ -33,7 +33,11 @@ class Graph_GUITest {
 					dest = r.nextInt(100);
 				}
 				double weight = r.nextInt(100);
+				try {
 				g.connect(d.getKey(), dest, weight);
+				}
+				catch(Exception e) {
+				}
 			}
 		}
 
