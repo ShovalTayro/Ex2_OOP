@@ -144,14 +144,33 @@ class Graph_AlgoTest {
 
 	@Test
 	void testTSP() {
-		g.connect(0, 1, 2);
-		g.connect(1, 2, 1);
-		g.connect(2, 3, 3);
-		g.connect(4, 0, 2);
+//		g.connect(0, 1, 2);
+//		g.connect(1, 2, 1);
+//		g.connect(2, 3, 3);
+//		g.connect(4, 0, 2);
+//		List<Integer> targets = new ArrayList<Integer>();
+//		targets.add(0);
+//		targets.add(2);
+//		targets.add(4);
+//		Graph_Algo a = new Graph_Algo();
+//		a.init(g);
+//		List<node_data> ans =a.TSP(targets);
+//		if(ans.isEmpty()) System.out.println("null");
+//		else {
+//			for (int i = 0; i < ans.size(); i++) {
+//				System.out.print(ans.get(i).getKey() + " ");
+//			}
+//		}
+		
+		DGraph g = new DGraph();
+		g.addNode(new nodeData(100,0, new Point3D(100,200,300)));
+		g.addNode(new nodeData(200,0, new Point3D(200,300,400)));
+		g.connect(100, 200, 5);
+		g.connect(200, 100, 10);
 		List<Integer> targets = new ArrayList<Integer>();
-		targets.add(0);
-		targets.add(2);
-		targets.add(4);
+		targets.add(100);
+		targets.add(200);
+		targets.add(100);
 		Graph_Algo a = new Graph_Algo();
 		a.init(g);
 		List<node_data> ans =a.TSP(targets);

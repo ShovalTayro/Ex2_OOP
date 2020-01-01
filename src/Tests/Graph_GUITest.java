@@ -40,8 +40,6 @@ class Graph_GUITest {
 				}
 			}
 		}
-
-
 		Graph_GUI gr = new Graph_GUI(g);
 		gr.setVisible(true);
 	}

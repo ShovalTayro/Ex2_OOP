@@ -28,6 +28,13 @@ import dataStructure.node_data;
 public class Graph_Algo implements graph_algorithms, Serializable{
 	graph ourGraph;
 	
+	public Graph_Algo(graph _graph) {
+		init(_graph);
+	}
+	public Graph_Algo() {
+		this.ourGraph = null;
+	}
+
 	@Override
 	public void init(graph g) {
 		this.ourGraph =g;

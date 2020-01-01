@@ -175,7 +175,8 @@ public class Graph_GUI extends JFrame implements ActionListener , Serializable{
 		}
 		List<node_data> nodes =a.TSP(targets);
 		for (int i = 0; i < nodes.size()-1; i++) {
-			gr.getEdge(nodes.get(i).getKey(), nodes.get(i+1).getKey()).setTag(100);	
+			if(nodes.get(i).getKey() != nodes.get(i+1).getKey()) 
+				gr.getEdge(nodes.get(i).getKey(), nodes.get(i+1).getKey()).setTag(100);	
 		}
 		repaint();
 		String answer = "";
