@@ -12,14 +12,15 @@ import utils.Point3D;
 
 class Graph_GUITest {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws InterruptedException {
 		DGraph g = new DGraph();
 		Random r = new Random();
 		for (int i = 0; i < 10; i++) {
 
 			Point3D p = new Point3D(70+r.nextInt(400), 70+r.nextInt(400));
 			nodeData n = new nodeData(i, 0, p);
-			g.addNode(n);
+	    	g.addNode(n);
+			
 		}
 		Collection<node_data> nodes = g.getV();
 		Iterator<node_data> it = nodes.iterator();
@@ -42,5 +43,8 @@ class Graph_GUITest {
 		}
 		Graph_GUI gr = new Graph_GUI(g);
 		gr.setVisible(true);
-	}
+		g.addNode(new nodeData(400,0, new Point3D(400,400,0)));
+		g.addNode(new nodeData(480,0, new Point3D(480,480,0)));
+		g.addNode(new nodeData(490,0, new Point3D(490,480,0)));
+		}
 }

@@ -19,23 +19,31 @@ import javax.swing.JOptionPane;
 import algorithms.Graph_Algo;
 import dataStructure.edge_data;
 import dataStructure.graph;
+import dataStructure.nodeData;
 import dataStructure.node_data;
 
-public class Graph_GUI extends JFrame implements ActionListener , Serializable{
+public class Graph_GUI extends JFrame implements ActionListener , Serializable, Runnable{
 	graph gr;
 	Graph_Algo a = new Graph_Algo();
+	private int mc;
+	Thread t1 = new Thread(this);
 
 	public Graph_GUI() {
+		//t1.start();
+		this.mc = 0;
 		initGUI();
 	}
 
 	public Graph_GUI(graph graph) {
+		//t1.start();
 		this.gr = graph;
 		this.a.init(graph);
+		this.mc = graph.getMC();
 		initGUI();
 	}
 
 	private void initGUI(){
+		t1.start();
 		this.setSize(700, 700);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setVisible(true);
@@ -46,6 +54,14 @@ public class Graph_GUI extends JFrame implements ActionListener , Serializable{
 		this.setMenuBar(menuBar);
 		MenuItem Draw = new MenuItem("Draw graph");
 		Draw.addActionListener(this);
+		MenuItem Add = new MenuItem("Add node");
+		Add.addActionListener(this);
+		MenuItem Remove = new MenuItem("Remove node");
+		Remove.addActionListener(this);
+		MenuItem RemoveE = new MenuItem("Remove edge");
+		RemoveE.addActionListener(this);
+		MenuItem Connect = new MenuItem("Connect edge");
+		Connect.addActionListener(this);
 		MenuItem Save = new MenuItem("Save");
 		Save.addActionListener(this);
 		MenuItem Load = new MenuItem("Load");
@@ -53,6 +69,10 @@ public class Graph_GUI extends JFrame implements ActionListener , Serializable{
 		File.add(Save);
 		File.add(Load);
 		File.add(Draw);
+		File.add(Add);
+		File.add(Remove);
+		File.add(Connect);
+		File.add(RemoveE);
 
 
 		Menu Algo = new Menu("Algo");
@@ -97,6 +117,30 @@ public class Graph_GUI extends JFrame implements ActionListener , Serializable{
 			a.init(gr);
 			windowSP();
 		}
+		if(str.equals("Add node")) {
+			clear();
+			repaint();
+			a.init(gr);
+			windowAdd();
+		}
+		if(str.equals("Remove node")) {
+			clear();
+			repaint();
+			a.init(gr);
+			windowRemoveNode();
+		}
+		if(str.equals("Remove edge")) {
+			clear();
+			repaint();
+			a.init(gr);
+			windowRemoveEdge();
+		}
+		if(str.equals("Connect edge")) {
+			clear();
+			repaint();
+			a.init(gr);
+			windowConnect();
+		}
 
 		if(str.equals("Shortest Path Dist")) {
 			clear();
@@ -118,6 +162,58 @@ public class Graph_GUI extends JFrame implements ActionListener , Serializable{
 		}
 	}
 
+
+	private void windowAdd() {
+		JFrame f=new JFrame("Add Node");  
+		String x = JOptionPane.showInputDialog(f, "Enter point 3D(x,y,z) : ");
+		String y = JOptionPane.showInputDialog(f, "Enter weight: ");
+		String keys = JOptionPane.showInputDialog(f, "Enter key: ");
+		Point3D  p =  new Point3D(Integer.parseInt(x.split(",")[0]),Integer.parseInt(x.split(",")[1]),Integer.parseInt(x.split(",")[2]));
+		int y2=Integer.parseInt(y);
+		int key2=Integer.parseInt(keys);
+		nodeData n = new nodeData(key2, y2, p);
+		gr.addNode(n);
+	}
+
+	private void windowRemoveNode() {
+		JFrame f=new JFrame("Remove Node");  
+		String key = JOptionPane.showInputDialog(f, "Enter key to remove: ");
+		int key2=Integer.parseInt(key);
+		node_data ans = gr.removeNode(key2);
+		if(ans == null) JOptionPane.showMessageDialog(f, "The node " + key2+ " doesn't exist");
+		else JOptionPane.showMessageDialog(f, "The node " + key2+" has been removed");
+	}
+
+	private void windowRemoveEdge() {
+		JFrame f=new JFrame("Remove Edge");  
+		String src = JOptionPane.showInputDialog(f, "Enter src: ");
+		String dest = JOptionPane.showInputDialog(f, "Enter dest: ");
+		int src1=Integer.parseInt(src);
+		int dest1=Integer.parseInt(dest);
+		try {
+			gr.removeEdge(src1, dest1);
+			JOptionPane.showMessageDialog(f, "The edge between " + src1+" to "+dest1 +" has been removed");
+		}
+		catch(Exception e) {
+			JOptionPane.showMessageDialog(f, "The remove failed");
+		}
+	}
+	private void windowConnect() {
+		JFrame f=new JFrame("Add Edge");  
+		String src = JOptionPane.showInputDialog(f, "Enter src: ");
+		String dest = JOptionPane.showInputDialog(f, "Enter dest: ");
+		String weight = JOptionPane.showInputDialog(f, "Enter weight: ");
+		int src1=Integer.parseInt(src);
+		int dest1=Integer.parseInt(dest);
+		int weight1=Integer.parseInt(weight);
+		try {
+			gr.connect(src1, dest1, weight1);
+			JOptionPane.showMessageDialog(f, "The edge between " + src1+" to "+dest1 +" has been connected");
+		}
+		catch(Exception e) {
+			JOptionPane.showMessageDialog(f, "The connect failed");
+		}
+	}
 
 	public void paint(Graphics g) {
 		super.paint(g);
@@ -256,6 +352,21 @@ public class Graph_GUI extends JFrame implements ActionListener , Serializable{
 		if(a.isConnected()) JOptionPane.showMessageDialog(f, "Is connected? TRUE");
 		else {
 			JOptionPane.showMessageDialog(f, "Is connected? FALSE");
+		}
+	}
+
+	@Override
+	public void run() {
+		while(true) {
+			if(this.mc != this.gr.getMC()) {
+				this.mc = this.gr.getMC();
+				synchronized(this) {
+					repaint();
+				}
+			}
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {e.printStackTrace();}
 		}
 	}
 }

@@ -2,6 +2,8 @@ package dataStructure;
 
 import java.util.Collection;
 import java.util.Hashtable;
+import java.util.Set;
+
 import javax.swing.JFrame;
 
 public class DGraph extends JFrame  implements graph{
@@ -79,12 +81,12 @@ public class DGraph extends JFrame  implements graph{
 		if(temp== null) return null;
 		//update the number of edges in the graph
 		countE -= edges.get(temp).size();
-		edges.get(temp).clear();
+		Set<node_data> sets = edges.keySet();
 		//remove edge when dest is the key
-		for(int i = 0; i < nodes.size(); i++) {
-			node_data tempR = nodes.get(i);
+		for(node_data tempR : sets) {
 			edges.get(tempR).remove(key);
 		}
+		edges.remove(temp);
 		nodes.remove(key);
 		countMC++;
 		return temp;
@@ -103,15 +105,15 @@ public class DGraph extends JFrame  implements graph{
 					countE--;
 				}
 				else {
-					System.out.println("the edge does not exist");
+					throw new RuntimeException("the edge does not exist");
 				}
 			}
 			else {
-				System.out.println("one of the nodes doesn't exist");
+				throw new RuntimeException("one of the nodes doesn't exist");
 			}
 		}
 		else {
-			System.out.println("same nodes");
+			throw new RuntimeException("same nodes");
 		}
 		return ans;
 	}

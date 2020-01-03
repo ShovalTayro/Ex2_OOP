@@ -101,20 +101,32 @@ class DGraphTest {
 		g.removeNode(0);
 		assertEquals(0, g.edgeSize());
 		assertEquals(4, g.nodeSize());
-	
-			 if (g.removeNode(-1)== null) System.out.println("the node does not exist");
-			if(g.removeNode(0)== null)	System.out.println("the node does not exist");
+
+		if (g.removeNode(-1)== null) System.out.println("the node does not exist");
+		if(g.removeNode(0)== null)	System.out.println("the node does not exist");
 	}
 
 	@Test
 	void testRemoveEdge() {
 		g.connect(0, 1, 0);
 		g.connect(1, 0, 1);
-		g.removeEdge(0, 1);
-		g.removeEdge(2, 3);
+		try {
+			g.removeEdge(0, 1);
+			g.removeEdge(2, 3);
+		}
+		catch(Exception E) {
+		}
 		assertEquals(1, g.edgeSize());
-		g.removeEdge(-2, 2);
-		g.removeEdge(2, 2);
+		try {
+			g.removeEdge(-2, 2);
+		}
+		catch(Exception E) {
+		}
+		try {
+			g.removeEdge(2, 2);
+		}
+		catch(Exception E) {
+		}
 	}
 
 	@Test
